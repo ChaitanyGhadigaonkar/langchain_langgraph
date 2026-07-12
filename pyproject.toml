@@ -21,4 +21,5 @@ dependencies = [
     "rapidocr>=3.9.1",
     "rapidocr-onnxruntime>=1.4.4",
     "sqlalchemy>=2.0.51",
+    "streamlit>=1.39.0",
 ]

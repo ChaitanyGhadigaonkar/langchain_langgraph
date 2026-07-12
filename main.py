@@ -30,10 +30,6 @@ async def main():
             "llm_calls": 0
         }, config=config)
 
-        messages = response["messages"]
-
-        messages[-1].pretty_print()
-
-    print("app is not set")
+        response["messages"]
 
 asyncio.run(main())
