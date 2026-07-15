@@ -1,3 +1,4 @@
+from langchain_core.globals import set_debug
 from config import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
 from langgraph.graph import StateGraph, START
 from langchain_core.messages import ToolMessage
@@ -11,6 +12,7 @@ from retriever_agent.tool import tools, tools_by_name
 from retriever_agent.model import model
 from retriever_agent.state import MessagesState
 
+# set_debug(True)
 model = model.bind_tools(tools)
 
 
