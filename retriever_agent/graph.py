@@ -8,7 +8,7 @@ from psycopg.rows import dict_row
 from psycopg.errors import DatabaseError
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from retriever_agent.tool import tools, tools_by_name
+from retriever_agent.tool import tools
 from retriever_agent.model import model
 from retriever_agent.state import MessagesState
 

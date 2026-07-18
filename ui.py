@@ -79,7 +79,18 @@ def render_message(msg):
         # Then show the assistant's actual text content, if any
         if msg.content:
             with st.chat_message("assistant"):
-                st.write(msg.content)
+                content = ""
+                if isinstance(msg.content, str):
+                    content = msg.content
+
+                if isinstance(msg.content, list):
+                    content = "".join(
+                        block.get("text", "")
+                        for block in msg.content
+                        if isinstance(block, dict) and block.get("type") == "text"
+                    )
+
+                st.markdown(content)
 
     elif isinstance(msg, ToolMessage):
         with st.chat_message("assistant", avatar="✅"):
