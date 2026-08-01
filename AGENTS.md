@@ -7,6 +7,7 @@
 - `retriever_agent/` contains the LangGraph RAG workflow: `graph.py` builds the graph and Postgres checkpointer, `model.py` configures the chat model, `tool.py` exposes retrieval, and `vector_store.py` configures embeddings and PGVector.
 - `experiments/streamlit/ui.py` is the Streamlit chat interface used for testing and will be shifted to `next.js` for the frontend.
 - `api/` contains an in-progress FastAPI interface and SQLAlchemy models. Root-level `config.py` loads environment settings; notebooks support ingestion and experimentation. Keep generated data and source PDFs in `papers/` (ignored by Git).
+- `frontend/` is the Next.js 16 chat UI. See [frontend/AGENTS.md](frontend/AGENTS.md) for setup, structure, and coding conventions.
 - `experiments/notebooks/` contains exploratory and testing notebooks.
 
 ## Setup, Run, and Validation
