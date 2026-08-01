@@ -8,7 +8,7 @@ from psycopg.rows import dict_row
 from psycopg.errors import DatabaseError
 from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from retriever_agent.tool import tools
+from retriever_agent.tool import tools, tools_by_name
 from retriever_agent.model import model
 from retriever_agent.state import MessagesState
 
@@ -97,16 +97,7 @@ async def get_app():
             checkpointer = AsyncPostgresSaver(conn=pool)
             await checkpointer.setup()
 
-            graph = StateGraph(MessagesState)
-            graph.add_node("llm_call", model_node)
-            graph.add_node("tool_node", tool_node)
-            graph.add_edge(START, "llm_call")
-            graph.add_conditional_edges(
-                "llm_call",
-                should_continue,
-                ["tool_node", END],
-            )
-            graph.add_edge("tool_node", "llm_call")
+            graph = get_graph()
 
             _app = graph.compile(checkpointer=checkpointer)
 
@@ -116,3 +107,17 @@ async def get_app():
     except Exception as e:
         print(str(e))
         raise ValueError("Something went's wrong")
+
+
+def get_graph():
+    graph = StateGraph(MessagesState)
+    graph.add_node("llm_call", model_node)
+    graph.add_node("tool_node", tool_node)
+    graph.add_edge(START, "llm_call")
+    graph.add_conditional_edges(
+        "llm_call",
+        should_continue,
+        ["tool_node", END],
+    )
+    graph.add_edge("tool_node", "llm_call")
+    return graph
