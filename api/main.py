@@ -1,4 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from sqlalchemy.exc import DatabaseError as SQLAlchemyDatabaseError
 from contextlib import asynccontextmanager
 
 from psycopg_pool import AsyncConnectionPool
@@ -17,6 +20,8 @@ from retriever_agent.graph import get_graph
 from config import get_api_database_url
 from api.db import engine, get_db_instance
 from api.models import Base, Conversation
+from api.routes.conversations import router as conversations_router
+from api.exceptions import APIException
 
 
 DB_URL = get_api_database_url()
@@ -51,6 +56,7 @@ async def lifespan(app: FastAPI):
     graph = get_graph()
 
     agent_graph = graph.compile(checkpointer=checkpointer)
+    app.state.agent_graph = agent_graph
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
     yield
@@ -59,6 +65,29 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+@app.exception_handler(APIException)
+async def api_exception_handler(request: Request, exc: APIException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"success": False, "message": exc.message}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"success": False, "message": "Validation error"}
+    )
+
+@app.exception_handler(SQLAlchemyDatabaseError)
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyDatabaseError):
+    return JSONResponse(
+        status_code=500,
+        content={"success": False, "message": "Database error occurred"}
+    )
+
+app.include_router(conversations_router)
 
 
 @app.get("/health")
@@ -90,25 +119,4 @@ async def setup(db: Annotated[AsyncSession, Depends(get_db_instance)]):
     return {
         "response": response["messages"],
         "conversations": conversations.scalars().all()
-    }
-
-
-@app.get("/c")
-async def get_conversations(db: Annotated[AsyncSession, Depends(get_db_instance)]):
-    conversations = await db.execute(select(Conversation).order_by(Conversation.id))
-
-    return {
-        "conversations": list(map(lambda conversation: conversation.id, conversations))
-    }
-
-
-@app.get("/c/{conversation_id}")
-async def get_conversation(conversation_id: int, db: Annotated[AsyncSession, Depends(get_db_instance)]):
-    conversation = await db.scalar(select(Conversation).where(Conversation.id == conversation_id))
-
-    if not conversation:
-        raise HTTPException(404, "Not found")
-
-    return {
-        "conversation": conversation.id
     }
