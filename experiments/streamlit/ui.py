@@ -1,9 +1,17 @@
+import asyncio
 import json
+import sys
+import uuid
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 
 import streamlit as st
 from langchain.messages import AIMessage, HumanMessage, ToolMessage, SystemMessage
-import uuid
-import asyncio
 
 from retriever_agent.graph import get_app
 
