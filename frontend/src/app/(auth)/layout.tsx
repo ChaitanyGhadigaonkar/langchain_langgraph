@@ -10,7 +10,7 @@ const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
         <AppSidebar />
         <div className="flex-1">
           <Header />
-          <main className="mx-auto h-full max-h-full max-w-6xl overflow-hidden">{children}</main>
+          <main className="mx-auto h-full max-h-full max-w-6xl overflow-hidden pt-14">{children}</main>
         </div>
       </SidebarProvider>
     </TooltipProvider>

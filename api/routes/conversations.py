@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -59,6 +59,7 @@ async def create_conversation(db: Annotated[AsyncSession, Depends(get_db_instanc
         user_id=hardcoded_user_id,
         title=None
     )
+    # raise HTTPException(status_code=400, detail="Form Error")
     db.add(new_conversation)
     await db.commit()
     await db.refresh(new_conversation)

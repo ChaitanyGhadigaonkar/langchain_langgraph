@@ -1,11 +1,21 @@
-const ChatPage = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params;
+"use client";
+
+import { useParams } from "next/navigation";
+
+import { SendMessageFormData } from "@/app/schema";
+import ChatInput from "@/components/chat-input";
+
+const ChatPage = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const handleCreateConversation = async (_data: SendMessageFormData) => {};
   return (
-    <div className="flex flex-1 flex-col overflow-hidden p-4">
-      <div className="flex-1 overflow-y-auto">
-        <p>Chat Thread: {id}</p>
-        <p className="text-muted-foreground">The chat interface will be built here.</p>
+    <div className="flex h-full flex-1 flex-col justify-between px-4 md:items-center md:px-30">
+      <div>
+        conversation Id:
+        {id}
       </div>
+      <ChatInput onSubmit={handleCreateConversation} />
     </div>
   );
 };

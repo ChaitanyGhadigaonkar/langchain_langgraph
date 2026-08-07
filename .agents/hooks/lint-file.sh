@@ -15,9 +15,9 @@ if [ -n "$TARGET_FILE" ] && [[ "$TARGET_FILE" == *"/frontend/"* ]]; then
   # Check if the file still exists (wasn't deleted)
   if [ -f "$TARGET_FILE" ]; then
     # Run prettier
-    npx prettier --write "$TARGET_FILE" >/dev/null 2>&1
+    pnpm exec prettier --write "$TARGET_FILE" >/dev/null 2>&1
     # Run eslint
-    npx eslint --fix "$TARGET_FILE" >/dev/null 2>&1
+    pnpm exec eslint --fix "$TARGET_FILE" >/dev/null 2>&1
   fi
 fi
 

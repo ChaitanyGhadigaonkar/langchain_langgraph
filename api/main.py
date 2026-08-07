@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import DatabaseError as SQLAlchemyDatabaseError
 from contextlib import asynccontextmanager
 
@@ -66,6 +67,19 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 @app.exception_handler(APIException)
 async def api_exception_handler(request: Request, exc: APIException):
     return JSONResponse(
@@ -73,12 +87,14 @@ async def api_exception_handler(request: Request, exc: APIException):
         content={"success": False, "message": exc.message}
     )
 
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=422,
         content={"success": False, "message": "Validation error"}
     )
+
 
 @app.exception_handler(SQLAlchemyDatabaseError)
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyDatabaseError):
