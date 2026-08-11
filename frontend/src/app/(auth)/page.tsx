@@ -13,6 +13,7 @@ const HomePage = () => {
     try {
       const createdConversation = await createConversationAction();
       router.push(`/c/${createdConversation.id}`);
+      router.refresh();
     } catch (error) {
       console.log((error as unknown as Error).message);
     }

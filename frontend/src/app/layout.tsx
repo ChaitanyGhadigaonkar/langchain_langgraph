@@ -25,9 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${IBMPlexMono.variable} h-full antialiased`}>
-      <body className="bg-background dark text-foreground flex h-dvh w-screen flex-col overflow-hidden">
-        {children}
-      </body>
+      <body className="bg-background text-foreground flex h-dvh w-screen flex-col overflow-hidden">{children}</body>
     </html>
   );
 }

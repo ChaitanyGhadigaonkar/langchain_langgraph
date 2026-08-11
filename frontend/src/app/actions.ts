@@ -1,3 +1,4 @@
+// import { revalidatePath } from "next/cache";
 import { createConversation } from "@/services/conversations";
 
 // import { SendMessageFormData } from "./schema";
@@ -5,6 +6,7 @@ import { createConversation } from "@/services/conversations";
 export const createConversationAction = async () => {
   try {
     const conversation = await createConversation();
+    // revalidatePath("/c");
     return conversation;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

@@ -21,41 +21,43 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { fetchConversations } from "@/services/conversations";
 
 import { Button } from "./ui/button";
 
-const AppSidebar = () => {
+const AppSidebar = async () => {
+  const conversations = await fetchConversations();
   return (
     <Sidebar>
-      <SidebarHeader className="mb-4 h-14 justify-center">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center justify-between">
-            <Link href={"/"}>
-              <h1 className="font-sans text-xl font-bold">ChatGPT</h1>
-            </Link>
-            <div className="flex gap-2">
-              <Button size={"icon"} variant={"ghost"}>
-                <HugeiconsIcon icon={Search01Icon} />
-              </Button>
-              <Button variant={"ghost"} size={"icon"} className={"md:hidden"}>
-                <HugeiconsIcon icon={Cancel01Icon} />
-              </Button>
+      <SidebarHeader className="justify-center pb-0!">
+        <SidebarMenu className="flex flex-col gap-2.5">
+          <SidebarMenuItem className="">
+            <div className="flex items-center justify-between pl-2">
+              <Link href={"/"}>
+                <h1 className="font-sans text-xl font-bold">ChatGPT</h1>
+              </Link>
+              <div className="flex gap-2">
+                <Button size={"icon"} variant={"ghost"}>
+                  <HugeiconsIcon icon={Search01Icon} />
+                </Button>
+                <Button variant={"ghost"} size={"icon"} className={"md:hidden"}>
+                  <HugeiconsIcon icon={Cancel01Icon} />
+                </Button>
+              </div>
             </div>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <Link href={"/"} className="flex items-center gap-2 text-sm">
+                <HugeiconsIcon icon={ChatAddIcon} strokeWidth={2} />
+                New Chat
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup className="gap-2">
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Link href={"/"} className="flex items-center gap-2 text-sm">
-                  <HugeiconsIcon icon={ChatAddIcon} strokeWidth={2} />
-                  New Chat
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
+        <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton>
@@ -87,18 +89,16 @@ const AppSidebar = () => {
         <SidebarGroup className="gap-2">
           <SidebarGroupLabel>Recent Convesations</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-sm">Implement ISR in Next js</SidebarMenuButton>
-              <SidebarMenuAction showOnHover>
-                <HugeiconsIcon icon={EllipsisIcon} strokeWidth={2} />
-              </SidebarMenuAction>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-sm">Revalidate path in next js</SidebarMenuButton>
-              <SidebarMenuAction showOnHover>
-                <HugeiconsIcon icon={EllipsisIcon} strokeWidth={2} />
-              </SidebarMenuAction>
-            </SidebarMenuItem>
+            {conversations.map((conversation) => (
+              <SidebarMenuItem key={conversation.id}>
+                <SidebarMenuButton className="text-sm">
+                  {conversation.title ?? "Implement ISR in Next js"}
+                </SidebarMenuButton>
+                <SidebarMenuAction showOnHover>
+                  <HugeiconsIcon icon={EllipsisIcon} strokeWidth={2} />
+                </SidebarMenuAction>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
