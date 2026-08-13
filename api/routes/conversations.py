@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 import uuid
 import json
 from typing import Annotated
-from fastapi import Request
 from fastapi.responses import StreamingResponse
 
 from api.db import get_db_instance
@@ -20,9 +19,9 @@ router = APIRouter(prefix="/c", tags=["conversations"])
 
 
 @router.get("/", response_model=GetConversationsResponse)
-async def get_conversations(db: Annotated[AsyncSession, Depends(get_db_instance)]):
-    result = await db.execute(select(Conversation).order_by(Conversation.updated_at.desc()))
-
+async def get_conversations(req: Request, db: Annotated[AsyncSession, Depends(get_db_instance)]):
+    user_id = req.headers.get("user_id")
+    result = await db.execute(select(Conversation).where(Conversation.user_id == user_id).order_by(Conversation.updated_at.desc()))
     return GetConversationsResponse(
         success=True,
         message="Conversations retrieved successfully",
@@ -52,11 +51,10 @@ async def get_conversation(conversation_id: uuid.UUID, db: Annotated[AsyncSessio
 
 
 @router.post("/", response_model=CreateConversationResponse, status_code=201)
-async def create_conversation(db: Annotated[AsyncSession, Depends(get_db_instance)]):
-    hardcoded_user_id = uuid.UUID("11111111-1111-1111-1111-111111111111")
-
+async def create_conversation(req: Request, db: Annotated[AsyncSession, Depends(get_db_instance)]):
+    user_id = req.headers.get("user_id")
     new_conversation = Conversation(
-        user_id=hardcoded_user_id,
+        user_id=user_id,
         title=None
     )
     # raise HTTPException(status_code=400, detail="Form Error")
@@ -90,7 +88,7 @@ async def send_message(
 
     async def event_generator():
         config = {"configurable": {"thread_id": str(conversation_id)}}
-        inputs = {"messages": [("user", payload.text)]}
+        inputs = {"messages": [("user", payload.text)], "llm_calls": 0}
 
         async for event in agent_graph.astream_events(inputs, config=config, version="v1"):
             kind = event["event"]
@@ -101,7 +99,10 @@ async def send_message(
                 if chunk.content:
                     sse_data["content"] = chunk.content
                 if chunk.tool_call_chunks:
-                    sse_data["tool_calls"] = chunk.tool_call_chunks
+                    sse_data["tool_calls"] = [
+                        {"id": tc.get("id"), "name": tc.get("name"), "args": tc.get("args")}
+                        for tc in chunk.tool_call_chunks
+                    ]
 
             elif kind == "on_tool_start":
                 sse_data["name"] = event["name"]

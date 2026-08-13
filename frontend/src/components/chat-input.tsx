@@ -12,7 +12,7 @@ import { Field } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 
 type Props = {
-  onSubmit: (values: SendMessageFormData) => void;
+  onSubmit: (values: SendMessageFormData) => void | Promise<void>;
 };
 
 const ChatInput: FC<Props> = ({ onSubmit }) => {
@@ -32,8 +32,8 @@ const ChatInput: FC<Props> = ({ onSubmit }) => {
     <form
       className="w-full"
       method="post"
-      onSubmit={handleSubmit((args) => {
-        onSubmit(args);
+      onSubmit={handleSubmit(async (args) => {
+        await onSubmit(args);
         reset();
       })}
     >

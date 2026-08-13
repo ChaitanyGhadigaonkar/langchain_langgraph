@@ -9,9 +9,10 @@ import ChatInput from "@/components/chat-input";
 const HomePage = () => {
   const router = useRouter();
 
-  const handleCreateConversation = async (_data: SendMessageFormData) => {
+  const handleCreateConversation = async (data: SendMessageFormData) => {
     try {
       const createdConversation = await createConversationAction();
+      sessionStorage.setItem("initialMessage", data.message);
       router.push(`/c/${createdConversation.id}`);
       router.refresh();
     } catch (error) {
