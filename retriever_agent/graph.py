@@ -45,7 +45,8 @@ def tool_node(state: MessagesState) -> MessagesState:
         tool_result = tool.invoke(tool_call["args"])
 
         result.append(ToolMessage(
-            content=tool_result, tool_call_id=tool_call["id"]))
+            content=tool_result, tool_call_id=tool_call["id"], name=tool_name))
+
 
     return {
         "messages": result
