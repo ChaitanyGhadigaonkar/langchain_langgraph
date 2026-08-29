@@ -47,11 +47,11 @@ const AppSidebar = async () => {
             </div>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Link href={"/"} className="flex items-center gap-2 text-sm">
+            <SidebarMenuButton render={<Link href={"/"} />}>
+              <div className="flex items-center gap-2 text-sm">
                 <HugeiconsIcon icon={ChatAddIcon} strokeWidth={2} />
                 New Chat
-              </Link>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -60,11 +60,11 @@ const AppSidebar = async () => {
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton>
-                <Link href={"/"} className="flex items-center gap-2 text-sm">
+              <SidebarMenuButton render={<Link href={"/"} />}>
+                <div className="flex items-center gap-2 text-sm">
                   <HugeiconsIcon icon={LibraryIcon} strokeWidth={2} />
                   Library
-                </Link>
+                </div>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -91,7 +91,7 @@ const AppSidebar = async () => {
           <SidebarMenu>
             {conversations.map((conversation) => (
               <SidebarMenuItem key={conversation.id}>
-                <SidebarMenuButton className="text-sm">
+                <SidebarMenuButton className="text-sm" render={<Link href={`/c/${conversation.id}`} />}>
                   {conversation.title ?? "Implement ISR in Next js"}
                 </SidebarMenuButton>
                 <SidebarMenuAction showOnHover>

@@ -5,6 +5,17 @@ import { useCallback, useEffect, useState } from "react";
 
 import { SendMessageFormData } from "@/app/schema";
 import ChatInput from "@/components/chat-input";
+import { Bubble, BubbleContent } from "@/components/ui/bubble";
+import { Message, MessageAvatar, MessageContent } from "@/components/ui/message";
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from "@/components/ui/message-scroller";
+import { cn } from "@/lib/utils";
 import { fetchConversation, sendMessage } from "@/services/conversations";
 
 const ChatPage = () => {
@@ -72,11 +83,32 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="flex h-full flex-1 flex-col justify-between px-4 md:items-center md:px-30">
-      <div>
-        conversation Id: {id}
-        {isStreaming && <span> (streaming...)</span>}
-      </div>
+    <div className="relative flex h-full w-full flex-1 overflow-auto pt-14">
+      <MessageScrollerProvider>
+        <MessageScroller>
+          <MessageScrollerViewport>
+            <MessageScrollerContent className="relative mx-auto w-full max-w-6xl px-2 pt-2 md:px-30">
+              {new Array(40).fill(0).map((message, index) => (
+                <MessageScrollerItem
+                  key={index}
+                  messageId={message.toString()}
+                  scrollAnchor={true}
+                  className={`${index === new Array(40).length - 1 ? "pb-20" : ""}`}
+                >
+                  <Message align={index % 2 ? "end" : "start"}>
+                    <MessageContent>
+                      <Bubble variant="muted">
+                        <BubbleContent>The install failure is coming from the workspace package.</BubbleContent>
+                      </Bubble>
+                    </MessageContent>
+                  </Message>
+                </MessageScrollerItem>
+              ))}
+            </MessageScrollerContent>
+            <MessageScrollerButton className="data-[direction=end]:bottom-20" />
+          </MessageScrollerViewport>
+        </MessageScroller>
+      </MessageScrollerProvider>
       <ChatInput onSubmit={handleSendMessage} />
     </div>
   );

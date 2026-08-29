@@ -30,48 +30,50 @@ const ChatInput: FC<Props> = ({ onSubmit }) => {
 
   return (
     <form
-      className="w-full"
+      className="absolute right-0 bottom-0 left-0 mx-auto w-full max-w-6xl md:px-30"
       method="post"
       onSubmit={handleSubmit(async (args) => {
         await onSubmit(args);
         reset();
       })}
     >
-      <Controller
-        name="message"
-        control={control}
-        render={({ field, fieldState: _ }) => (
-          <Field
-          // data-invalid={fieldState.invalid}
-          >
-            <InputGroup className="mb-4 py-6">
-              <InputGroupInput
-                {...field}
-                placeholder="Ask Anything"
-                className="text-lg"
-                // aria-invalid={fieldState.invalid}
-                autoComplete="off"
-              />
-              <InputGroupAddon className="pl-4">
-                <InputGroupButton>
-                  <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
-                </InputGroupButton>
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  type="submit"
-                  variant={"default"}
-                  size={"icon-sm"}
-                  className={"shadow-none"}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? <Loader /> : <HugeiconsIcon icon={Sent02Icon} strokeWidth={2} />}
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
-          </Field>
-        )}
-      />
+      <div>
+        <Controller
+          name="message"
+          control={control}
+          render={({ field, fieldState: _ }) => (
+            <Field
+            // data-invalid={fieldState.invalid}
+            >
+              <InputGroup className="mb-4 py-5">
+                <InputGroupInput
+                  {...field}
+                  placeholder="Ask Anything"
+                  className="text-lg"
+                  // aria-invalid={fieldState.invalid}
+                  autoComplete="off"
+                />
+                <InputGroupAddon>
+                  <InputGroupButton size={"icon-sm"}>
+                    <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
+                  </InputGroupButton>
+                </InputGroupAddon>
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    type="submit"
+                    variant={"default"}
+                    size={"icon-sm"}
+                    className={"shadow-none"}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? <Loader /> : <HugeiconsIcon icon={Sent02Icon} strokeWidth={2} />}
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
+            </Field>
+          )}
+        />
+      </div>
     </form>
   );
 };

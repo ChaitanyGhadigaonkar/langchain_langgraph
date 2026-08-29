@@ -6,10 +6,14 @@ export async function fetchConversations(): Promise<Conversation[]> {
   return data.conversations;
 }
 
-export async function fetchConversation(conversationId: string): Promise<{ conversation: Conversation; messages: Message[] }> {
+export async function fetchConversation(
+  param: string | { conversationId: string }
+): Promise<{ conversation: Conversation; messages: Message[] }> {
+  const conversationId = typeof param === "string" ? param : param.conversationId;
   const { data } = await axiosClient.get<GetConversationOutput>(`/c/${conversationId}`);
   return { conversation: data.conversation, messages: data.messages };
 }
+
 
 export async function createConversation(): Promise<Conversation> {
   const { data } = await axiosClient.post<CreateConversationOutput>("/c/");

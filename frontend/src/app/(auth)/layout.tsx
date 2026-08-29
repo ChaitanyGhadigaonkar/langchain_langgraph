@@ -6,11 +6,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 const AuthenticatedLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <TooltipProvider>
-      <SidebarProvider defaultOpen>
+      <SidebarProvider defaultOpen className="h-dvh overflow-hidden">
         <AppSidebar />
-        <div className="flex-1">
+        <div className="flex h-dvh flex-1 flex-col overflow-hidden">
           <Header />
-          <main className="mx-auto h-full max-h-full max-w-6xl overflow-hidden pt-14">{children}</main>
+          <main className="flex h-full">{children}</main>
         </div>
       </SidebarProvider>
     </TooltipProvider>
