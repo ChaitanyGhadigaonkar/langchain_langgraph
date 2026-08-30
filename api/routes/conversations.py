@@ -109,7 +109,8 @@ async def send_message(
         config = {"configurable": {"thread_id": str(conversation_id)}}
 
         initial_state = await agent_graph.aget_state(config=config)
-        existing_msg_count = len(initial_state.values.get("messages", [])) if initial_state and initial_state.values else 0
+        existing_msg_count = len(initial_state.values.get(
+            "messages", [])) if initial_state and initial_state.values else 0
 
         inputs = {"messages": [("user", payload.text)], "llm_calls": 0}
 
@@ -120,13 +121,17 @@ async def send_message(
 
                 if kind == "on_chat_model_stream":
                     chunk = event["data"]["chunk"]
-                    if chunk.content:
-                        sse_data["content"] = chunk.content
+                    text = extract_text_from_langchain_content(chunk.content)
+                    if text:
+                        sse_data["content"] = text
                     if chunk.tool_call_chunks:
                         sse_data["tool_calls"] = [
-                            {"id": tc.get("id"), "name": tc.get("name"), "args": tc.get("args")}
+                            {"id": tc.get("id"), "name": tc.get(
+                                "name"), "args": tc.get("args")}
                             for tc in chunk.tool_call_chunks
                         ]
+                    if not text and not chunk.tool_call_chunks:
+                        continue
 
                 elif kind == "on_tool_start":
                     sse_data["name"] = event["name"]
@@ -140,6 +145,8 @@ async def send_message(
                         sse_data["output"] = tool_msg.content
                     else:
                         sse_data["output"] = tool_msg
+                else:
+                    continue
 
                 yield f"data: {json.dumps(sse_data, default=str)}\n\n"
         finally:
@@ -173,7 +180,8 @@ async def send_message(
                                 await session.flush()
                                 parent_id = tc_record.id
                             if msg.content:
-                                text_content = extract_text_from_langchain_content(msg.content)
+                                text_content = extract_text_from_langchain_content(
+                                    msg.content)
                                 if text_content:
                                     ai_record = DBMessage(
                                         conversation_id=conversation_id,
@@ -201,6 +209,12 @@ async def send_message(
 
                     await session.commit()
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
-
-
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
