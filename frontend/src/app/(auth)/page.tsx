@@ -21,7 +21,7 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex h-full items-end px-4 md:items-center md:px-30">
+    <div className="relative flex h-full w-full flex-1 overflow-auto pt-14">
       <ChatInput onSubmit={handleCreateConversation} />
     </div>
   );

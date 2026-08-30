@@ -13,9 +13,10 @@ import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "
 
 type Props = {
   onSubmit: (values: SendMessageFormData) => void | Promise<void>;
+  disabled?: boolean;
 };
 
-const ChatInput: FC<Props> = ({ onSubmit }) => {
+const ChatInput: FC<Props> = ({ onSubmit, disabled = false }) => {
   const {
     control,
     handleSubmit,
@@ -41,20 +42,18 @@ const ChatInput: FC<Props> = ({ onSubmit }) => {
         <Controller
           name="message"
           control={control}
-          render={({ field, fieldState: _ }) => (
-            <Field
-            // data-invalid={fieldState.invalid}
-            >
-              <InputGroup className="mb-4 py-5">
+          render={({ field }) => (
+            <Field>
+              <InputGroup className="bg-background mb-4 py-5 shadow-lg">
                 <InputGroupInput
                   {...field}
                   placeholder="Ask Anything"
                   className="text-lg"
-                  // aria-invalid={fieldState.invalid}
+                  disabled={isSubmitting || disabled}
                   autoComplete="off"
                 />
                 <InputGroupAddon>
-                  <InputGroupButton size={"icon-sm"}>
+                  <InputGroupButton size={"icon-sm"} disabled={isSubmitting || disabled}>
                     <HugeiconsIcon icon={PlusSignIcon} strokeWidth={2} />
                   </InputGroupButton>
                 </InputGroupAddon>
@@ -64,9 +63,9 @@ const ChatInput: FC<Props> = ({ onSubmit }) => {
                     variant={"default"}
                     size={"icon-sm"}
                     className={"shadow-none"}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || disabled}
                   >
-                    {isSubmitting ? <Loader /> : <HugeiconsIcon icon={Sent02Icon} strokeWidth={2} />}
+                    {isSubmitting || disabled ? <Loader /> : <HugeiconsIcon icon={Sent02Icon} strokeWidth={2} />}
                   </InputGroupButton>
                 </InputGroupAddon>
               </InputGroup>

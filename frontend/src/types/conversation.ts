@@ -28,3 +28,38 @@ export type GetConversationOutput = Output<{
   conversation: Conversation;
   messages: Message[];
 }>;
+
+export type ToolCall = {
+  id: string;
+  name: string;
+  args: Record<string, unknown> | string;
+  output: unknown;
+};
+
+export type ToolResult = {
+  tool_call_id: string;
+  name: string;
+  output: unknown;
+};
+
+export type UIMessage = {
+  id: string;
+  isStreaming?: boolean;
+  createdAt: string;
+} & (UserContent | AssistantContent | ToolContent);
+
+export type UserContent = {
+  role: "user";
+  text: string;
+};
+
+export type AssistantContent = {
+  role: "assistant";
+  text: string;
+  tool_calls: ToolCall[];
+};
+
+export type ToolContent = {
+  role: "tool";
+  tool_result: ToolResult;
+};
